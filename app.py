@@ -1,6 +1,5 @@
 from sqlite3 import dbapi2 as sqlite3
-from hashlib import md5
-from contextlib import closing
+
 from flask import Flask, request, session, url_for, redirect, \
      render_template, abort, g, flash
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,8 +8,7 @@ import plotly
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
-import pandas as pd
-import numpy as np
+from create_database import init_db
 import json
 from data_processing import bar_data, line_data, gantt_data, fileName
 import colors
@@ -146,7 +144,7 @@ def create_bar_plot():
     fig.update_layout(
         template='plotly_white',
         autosize=True,
-        width=600,
+        width=1000,
         height=400,
         barmode="stack",
         showlegend=False,
@@ -188,13 +186,12 @@ def create_line_plot():
         showlegend=False,
         title='Usage Time',
         hovermode='x unified',
+        width=600,
+        height=400,
         xaxis_title='Time of Day',
         yaxis_title='Usage Time (min)'
     )
-    print("__________________________________")
-    print(type(fig2))
-    graphJSON_l = json.dumps(fig2.to_plotly_json())
-    print(graphJSON_l)
+    graphJSON_l = json.dumps(fig2.to_plotly_json(), default=str)
     return graphJSON_l
 
 
@@ -313,22 +310,36 @@ def create_gantt_plot():
         xaxis_title="Time of Day",
         yaxis_title="Application Categories"
     )
-    graphJSON_g = json.dumps(fig3.to_plotly_json())
-    print(graphJSON_g)
+    graphJSON_g = json.dumps(fig3.to_plotly_json(), default=str)
     return graphJSON_g
+
 
 @app.route('/chart', methods=['GET', 'POST'])
 def chart():
     feature = request.args['date']
     graphJSON_bar = create_bar_plot()
-    # graphJSON_line = create_line_plot()
-    # graphJSON_gantt = create_gantt_plot()
-    # graphJSON = dict()
-    # graphJSON["bar"] = graphJSON_bar
-    # graphJSON["line"] = graphJSON_line
-    # graphJSON["gantt"] = graphJSON_gantt
+    graphJSON_line = create_line_plot()
+    graphJSON_gantt = create_gantt_plot()
+    graphJSON = dict()
+    graphJSON["bar"] = graphJSON_bar
+    graphJSON["line"] = graphJSON_line
+    return graphJSON
+
+
+@app.route('/gantt', methods=['GET', 'POST'])
+def gantt():
+    feature = request.args['date']
+    graphJSON_gantt = create_gantt_plot()
+    return graphJSON_gantt
+
+
+@app.route('/bar', methods=['GET', 'POST'])
+def bar():
+    feature = request.args['date']
+    graphJSON_bar = create_bar_plot()
     return graphJSON_bar
 
 
 if __name__ == '__main__':
+    init_db()
     app.run(port=5050, debug=True)

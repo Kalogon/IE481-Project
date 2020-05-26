@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geonho's Page</title>
+    <title>IE481-Project</title>
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
     <link rel="stylesheet" type=text/css href="{{url_for('static',filename='style_home.css')}}">
@@ -49,21 +49,10 @@
         <section class="content">
             <div id="description">
                 <div class="intro">
-                    <h1>How much time do you spend on your phone? Which applications do you use the most?</h1>
-                    <ul>
-                        <li>1. Select Date</li>
-                        <li>2. View</li>
-                    </ul>
+                    <img src = "{{url_for('static',filename='intro.PNG')}}">
                 </div>
                 <div class="category">
-                    <h1>Categories of Apps Include</h1>
-                    <ul>
-                        <li>1. SNS</li>
-                        <li>2. Multimedia</li>
-                        <li>3. Internet</li>
-                        <li>4. Games</li>
-                        <li>5. Others</li>
-                    </ul>
+                    <img src = "{{url_for('static',filename='category.PNG')}}">
                 </div>
             </div>
         </section>
@@ -80,6 +69,8 @@
 
 
     <script type="text/javascript">
+        let is_gantt = false
+
         $(function() {
             $( "#datepick" ).datepicker({
                 dateFormat: 'yy-mm-dd',
@@ -100,16 +91,58 @@
                             const description = document.getElementById("description")
                             chart1 = description.appendChild(document.createElement("div"))
                             chart1.setAttribute("id", "chart1");
-                            chart1.setAttribute("style", "width: 45%; height: 80%;");
+                            chart1.setAttribute("style", "width: 60%; height: 80%; display: flex; align-items: center; justify-contents: center;");
+                            chart1.onclick = function(){
+                                get_gantt(dateText)
+                            }
                             chart2 = description.appendChild(document.createElement("div"))
                             chart2.setAttribute("id", "chart2");
-                            chart2.setAttribute("style", "width: 45%; height: 80%;");
-                            Plotly.newPlot('chart1', data);
+                            chart2.setAttribute("style", "width: 30%; height: 80%; display: flex; align-items: center; justify-contents: center;");
+
+                            Plotly.newPlot('chart1', JSON.parse(data["bar"]));
+                            Plotly.newPlot('chart2', JSON.parse(data["line"]));
+
                         }
                     });
                 }
             });
+
         });
+        const get_gantt = (dateText, is) =>{
+            console.log("a")
+            if (!is_gantt){
+                $.ajax({
+                    url: "/gantt",
+                    type: "GET",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: {
+                        'date': dateText
+                    },
+                    success: function (gantt_data) {
+                        const description = document.getElementById("description")
+                        document.getElementById("chart1").innerHTML = ""
+                        Plotly.newPlot('chart1', JSON.parse(gantt_data))
+                        is_gantt = !is_gantt
+                    }
+                })
+            }
+            else{
+                $.ajax({
+                    url: "/bar",
+                    type: "GET",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: {
+                        'date': dateText
+                    },
+                    success: function (bar_data) {
+                        const description = document.getElementById("description")
+                        document.getElementById("chart1").innerHTML = ""
+                        Plotly.newPlot('chart1', JSON.parse(bar_data))
+                        is_gantt = !is_gantt
+                    }
+                })
+            }
+       }
     </script>
 </body>
 </html>
