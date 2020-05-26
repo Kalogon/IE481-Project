@@ -5,6 +5,16 @@ from flask import Flask, request, session, url_for, redirect, \
      render_template, abort, g, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 
+import plotly
+import plotly.graph_objs as go
+import plotly.figure_factory as ff
+
+import pandas as pd
+import numpy as np
+import json
+from data_processing import bar_data, line_data, gantt_data, fileName
+import colors
+
 app = Flask(__name__)
 app.secret_key = "ie481-programming code"
 
@@ -53,12 +63,6 @@ def home():
     if not g.user:
         return redirect(url_for('login'))
     return render_template('homePage.html', username=g.user['username'])
-
-
-# @app.route('/public')
-# def public_page():
-#     """Displays the latest messages of all users."""
-#     return render_template('publicpage.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -115,11 +119,215 @@ def register():
     return render_template('registerPage.html', error = error)
 
 
-@app.route('/show')
-def show():
-    """Displays the latest messages of all users."""
-    date = request.args.get('date')
-    return render_template('chart.html', date=date, username=g.user['username'])
+def create_bar_plot():
+    df_bar = bar_data(fileName)
+    appColors = colors.app_colors(df_bar)
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        y=["Other", "Games", "Internet", "Multimedia", "SNS"],
+        x=[0, 0, 0, 0, 0],
+        orientation='h'
+    ))
+    for index, row in df_bar.iterrows():
+        fig.add_trace(go.Bar(
+            y=[row['Task']],
+            x=[row['timeSpent_min']],
+            name=row['name'],
+            orientation='h',
+            hovertext=[row['Description']],
+            marker=dict(
+                color=appColors[row['name']],
+                line_color=appColors[row['name']],
+                line_width=4,
+                opacity=0.8
+            )
+        ))
+    fig.update_layout(
+        template='plotly_white',
+        autosize=True,
+        width=600,
+        height=400,
+        barmode="stack",
+        showlegend=False,
+        hovermode='y unified',
+        xaxis_title="Usage Time (min)",
+        yaxis_title="Application Categories"
+    )
+    graphJSON_b = json.dumps(fig.to_plotly_json())
+    return graphJSON_b
+
+
+def create_line_plot():
+    df_line_60T = line_data(fileName)
+
+    fig2 = go.Figure()
+    fig2.add_trace(go.Scatter(
+        x=df_line_60T['Start'],
+        y=df_line_60T['timeSpent_min'],
+        mode='lines',
+        line=dict(
+            color='#111111',
+            width=4
+        ))
+    )
+    for index, row in df_line_60T.iterrows():
+        fig2.add_trace(go.Bar(
+            x=[row['Start']],
+            y=[row['timeSpent_min']],
+            hovertext=[row['Description']],
+            marker=dict(
+                color='green',
+                line_color='rgb(150,150,150)',
+                line_width=1.5,
+                opacity=0.2
+            ))
+        )
+    fig2.update_layout(
+        template='plotly_white',
+        showlegend=False,
+        title='Usage Time',
+        hovermode='x unified',
+        xaxis_title='Time of Day',
+        yaxis_title='Usage Time (min)'
+    )
+    print("__________________________________")
+    print(type(fig2))
+    graphJSON_l = json.dumps(fig2.to_plotly_json())
+    print(graphJSON_l)
+    return graphJSON_l
+
+
+def create_gantt_plot():
+    df_gantt = gantt_data(fileName)
+    # SET COLORS FOR EACH APPLICATION
+    appColors = colors.app_colors(df_gantt)
+
+    # DATE EXTRACTION
+    date = df_gantt['Start'].iloc[0].date()
+
+    # CREATE GANTT CHART
+    fig3 = ff.create_gantt(
+        df_gantt,
+        bar_width=0.45,
+        colors=appColors,
+        index_col='name',
+        show_hover_fill=True,
+        group_tasks=True,
+        showgrid_x=True,
+        showgrid_y=True,
+    )
+
+    def add_label(graph, time, text, textcolor, bgcolor):
+        graph.add_annotation(
+            x='{} {}:00:00'.format(date, time),
+            y='4.5',
+            text="{}".format(text),
+            showarrow=False,
+            font=dict(
+                family="Arial, monospace",
+                size=12,
+                color="{}".format(textcolor)
+            ),
+            align='center',
+            bordercolor="#111111",
+            borderwidth=2,
+            borderpad=4,
+            bgcolor="{}".format(bgcolor),
+            opacity=0.8
+        )
+
+    add_label(fig3, "02", "Night (After Midnight)", "#ffffff", "rgb(1, 87, 155)")
+    add_label(fig3, "08", "Morning", "#111111", "rgb(129, 212, 250)")
+    add_label(fig3, "14", "Afternoon", "#111111", "rgb(3, 169, 244)")
+    add_label(fig3, "18", "Evening", "#111111", "rgb(2, 136, 209)")
+    add_label(fig3, "22", "Night (Before Midnight)", "#ffffff", "rgb(1, 87, 155)")
+    fig3.update_layout(
+        shapes=[
+            dict(
+                fillcolor="rgba(1, 87, 155, 0.2)",
+                line={"width": 0},
+                type="rect",
+                x0='{} 00:00:00'.format(date),
+                x1='{} 06:00:00'.format(date),
+                xref="x",
+                y0=0,
+                y1=0.95,
+                yref="paper"
+            ),
+            dict(
+                fillcolor="rgba(129, 212, 250, 0.2)",
+                line={"width": 0},
+                type="rect",
+                x0='{} 06:00:00'.format(date),
+                x1='{} 12:00:00'.format(date),
+                xref="x",
+                y0=0,
+                y1=0.95,
+                yref="paper"
+            ),
+            dict(
+                fillcolor="rgba(3, 169, 244, 0.2)",
+                line={"width": 0},
+                type="rect",
+                x0='{} 12:00:00'.format(date),
+                x1='{} 17:00:00'.format(date),
+                xref="x",
+                y0=0,
+                y1=0.95,
+                yref="paper"
+            ),
+            dict(
+                fillcolor="rgba(2, 136, 209, 0.2)",
+                line={"width": 0},
+                type="rect",
+                x0='{} 17:00:00'.format(date),
+                x1='{} 20:00:00'.format(date),
+                xref="x",
+                y0=0,
+                y1=0.95,
+                yref="paper"
+            ),
+            dict(
+                fillcolor="rgba(1, 87, 155, 0.2)",
+                line={"width": 0},
+                type="rect",
+                x0='{} 20:00:00'.format(date),
+                x1='{} 23:59:00'.format(date),
+                xref="x",
+                y0=0,
+                y1=0.95,
+                yref="paper",
+            )
+        ],
+        template='plotly_white',
+        xaxis=dict(
+            autorange=True,
+            range=["{} 00:00:00".format(date), "{} 23:59:00".format(date)],
+            rangeslider=dict(
+                autorange=True,
+                range=["{} 00:00:00".format(date), "{} 23:59:00".format(date)]
+            ),
+            type="date"
+        ),
+        xaxis_title="Time of Day",
+        yaxis_title="Application Categories"
+    )
+    graphJSON_g = json.dumps(fig3.to_plotly_json())
+    print(graphJSON_g)
+    return graphJSON_g
+
+@app.route('/chart', methods=['GET', 'POST'])
+def chart():
+    feature = request.args['date']
+    graphJSON_bar = create_bar_plot()
+    # graphJSON_line = create_line_plot()
+    # graphJSON_gantt = create_gantt_plot()
+    # graphJSON = dict()
+    # graphJSON["bar"] = graphJSON_bar
+    # graphJSON["line"] = graphJSON_line
+    # graphJSON["gantt"] = graphJSON_gantt
+    return graphJSON_bar
 
 
 if __name__ == '__main__':

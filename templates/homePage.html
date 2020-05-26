@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
     <style>
         input {
             -webkit-appearance: none;
@@ -33,9 +34,7 @@
                     <li class="home"><a href="{{ url_for('home') }}"><b>Welcome {{username}}</b></a></li>
                     <li class="scroll">Here is Your App Usage for</li>
                     <li class="scroll">
-                        <form action="/show" method=get id="date">
-                            <input type="text" name= "date" id="datepick" placeholder="select date" autocomplete="off" >
-                        </form>
+                        <input type="text" name= "date" id="datepick" placeholder="select date" autocomplete="off" >
                     </li>
                     <li class="scroll">
                         <form action="/logout" method=post>
@@ -48,7 +47,7 @@
         </header>
 
         <section class="content">
-            <div class="description">
+            <div id="description">
                 <div class="intro">
                     <h1>How much time do you spend on your phone? Which applications do you use the most?</h1>
                     <ul>
@@ -86,7 +85,28 @@
                 dateFormat: 'yy-mm-dd',
                 onSelect: function (dateText, inst){
                     console.log(dateText)
-                    document.getElementById("date").submit(dateText)
+                    $.ajax({
+                        url: "/chart",
+                        type: "GET",
+                        contentType: 'application/json;charset=UTF-8',
+                        data: {
+                            'date': dateText
+
+                        },
+                        dataType:"json",
+                        success: function (data) {
+                            document.getElementsByClassName("intro")[0].remove()
+                            document.getElementsByClassName("category")[0].remove()
+                            const description = document.getElementById("description")
+                            chart1 = description.appendChild(document.createElement("div"))
+                            chart1.setAttribute("id", "chart1");
+                            chart1.setAttribute("style", "width: 45%; height: 80%;");
+                            chart2 = description.appendChild(document.createElement("div"))
+                            chart2.setAttribute("id", "chart2");
+                            chart2.setAttribute("style", "width: 45%; height: 80%;");
+                            Plotly.newPlot('chart1', data);
+                        }
+                    });
                 }
             });
         });
