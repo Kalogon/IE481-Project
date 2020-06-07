@@ -1,46 +1,47 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" type=text/css href="{{url_for('static',filename='style_register.css')}}">
-    <title>Document</title>
-</head>
-<body>
+{% extends "layout.html" %}
+{% block head %}
+    <nav>
+        <div class="nav-wrapper grey darken-4">
+        <a href="{{ url_for('home') }}" class="brand-logo right">NMP-Detector</a>
+        <div class="container">
+            <ul id="nav-mobile" class="left hide-on-med-and-down">
+            <li><a href="{{ url_for('register') }}">Sign Up</a></li>
+            <li><a href="{{ url_for('login') }}">Sign In</a></li>
+            </ul>
+        </div>
+        </div>
+    </nav>
+{% endblock %}
+{% block body %}
     <div class="container">
-        <header>
-            <h1>Register Page</h1>
-        </header>
-        <br><br>
-        <section class="content">
-            {% if error %}
-                <div class=error>
-                    <strong>Error:</strong> {{ error }}
-                </div>
-            {% endif %}
-            <br>
-            <form action="/register" method=POST>
-                <ul>
-                    <li>Username:</li>
-                    <li><input type=text name=username size=30 ></li>
-                    <li>Email:</li>
-                    <li><input type=text name=email size=30 ></li>
-                    <li>Password:</li>
-                    <li><input type=password name=password size=30></li>
-                    <li>Password<small>(repeat)</small>:</li>
-                    <li><input type=password name=password2 size=30></li>
-                </ul>
-                <br><br>
-                <div class="action"><input type=submit value="Sign Up"></div>
-            </form>
-            <br><br>
-            <div class="footer">
-                <a href="{{ url_for('login') }}">Already have ID</a>
+        <h2>Sign Up</h2>
+        {% if error %}
+            <div class="card-panel black white-text">
+                <strong>Error:</strong> {{ error }}
             </div>
-        </section>
+        {% endif %}
+        <form action="" method=post>
+            <div class="input-field">
+                <i class="material-icons prefix">account_box</i>
+                <input type=text name=username value="{{request.form.username}}" style="color: white">
+                <label for="username">Username</label>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">email</i>
+                <input type=text name=email size=30 value="{{ request.form.email }}" style="color: white">
+                <label for="email">E-Mail</label>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">arrow_forward</i>
+                <input type=password name=password size=30 style="color: white">
+                <label for="password">Password</label>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">arrow_forward</i>
+                <input type=password name=password2 style="color: white">
+                <label for="password2">Password Confirm</label>
+            </div>
+            <input type=submit value="Register" class="btn white waves-effect waves-light">
+        </form>
     </div>
-
-</body>
-</html>
+{% endblock %}

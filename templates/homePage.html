@@ -3,67 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IE481-Project</title>
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding&display=swap" rel="stylesheet">
+    <title>NMP-Detector</title>
     <link rel="stylesheet" type=text/css href="{{url_for('static',filename='style_home.css')}}">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <style>
-        input {
-            -webkit-appearance: none;
-            -webkit-border-radius: 0;
-            background-color: transparent;
-            border-width: 0px;
-            color: white;
-            font-size: 20px;
-            font-family: 'Nanum Gothic', sans-serif;
-        }
-        input:hover { text-decoration: none; border-bottom: 2px solid white; color: unset;}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <a name="main"></a>
-            <div class="content">
-                <ul>
-                    <li class="home"><a href="{{ url_for('home') }}"><b>Welcome {{username}}</b></a></li>
-                    <li class="scroll">Here is Your App Usage for</li>
-                    <li class="scroll">
-                        <input type="text" name= "date" id="datepick" placeholder="select date" autocomplete="off" >
-                    </li>
-                    <li class="scroll">
-                        <form action="/logout" method=post>
-                            <input type=submit value="Logout">
-                        </form>
-                    </li>
 
-                </ul>
-            </div>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <style>
+        #box {
+            color: black;
+            background-color:white;
+            display: flex;
+            position:fixed;
+            width:95%; 
+            max-width:95%;
+            height: 75%;
+            overflow: hidden;
+
+            display: inline-block;
+            border:5px solid #CCC;
+            z-index:0;
+            margin: 1% auto;
+            left: 0;
+            right: 0;
+        }
+        .datepicker-date-display {
+            background-color: black;
+        }
+        .datepicker-table {
+            color: black;
+        }
+    </style>
+
+</head>
+<body style="background-color: black; color: white">
+    <div>
+        <header>
+            <nav class="nav-extended grey darken-4">
+                <div class="nav-wrapper">
+                    <a href="{{ url_for('home') }}" class="brand-logo left">
+                        <img src = "{{url_for('static',filename='logo.PNG')}}" style="height:3%; width:3%; object-fit:contain">
+                        Welcome {{username}}!
+                    </a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li class="scroll">Here is your App Usage for:</li>
+                        <li class="active">
+                            <a class="btn black waves-effect waves-light">
+                                <input class="white-text" type="text" name= "date" id="datepick" placeholder="Select Date" autocomplete="off" >
+                            </a>
+                        </li>
+                        <li> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </li>
+                        <li><a href="{{ url_for('logout') }}" class="btn grey darken-3 waves-effect waves-light">Log Out</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-content">
+                    <ul class="tabs tabs-transparent">
+                        <li class="tab active"><a href="#about">About</a></li>
+                        <li class="tab"><a href="#test1">Test 1</a></li>
+                        <li class="tab"><a href="#test1">Test 1</a></li>
+                        <li class="tab"><a href="#test1">Test 1</a></li>
+                    </ul>
+                </div>
+            </nav>
         </header>
 
-        <section class="content">
-            <div id="description">
-                <div class="intro">
-                    <img src = "{{url_for('static',filename='intro.PNG')}}">
-                </div>
-                <div class="category">
-                    <img src = "{{url_for('static',filename='category.PNG')}}">
-                </div>
+        <main>
+            <div id="box">
+                <section class="content">
+                    <div id="description" style="height:100%; width:100%; object-fit:fill">
+                        <div class="intro">
+                            <img src = "{{url_for('static',filename='intro.PNG')}}" style="height:100%; width:100%; object-fit:contain">
+                        </div>
+                        <div class="category">
+                            <img src = "{{url_for('static',filename='category.PNG')}}" style="height:100%; width:100%; object-fit:contain">
+                        </div>
+                    </div>
+                </section>
             </div>
-        </section>
+        </main>
 
-
-        <footer>
-            <a name="footer"></a>
-            <div class="footer">
-                <h1><b>IE481 DP4 Mid-Fi prototype</b></h1>
-                <h1><b>Used Flask, Dash</b></h1>
-            </div>
+        <footer class="page-footer grey darken-3 box center-align white-text" style="position:fixed;bottom:0;left:0;width:100%;">
+            © 2020 [IE481] Data Visualization: NMP-Detector (Made with Flask, Dash)
         </footer>
     </div>
 
@@ -73,6 +107,7 @@
 
         $(function() {
             $( "#datepick" ).datepicker({
+                autoClose: true,
                 dateFormat: 'yy-mm-dd',
                 onSelect: function (dateText, inst){
                     console.log(dateText)

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block head %}
+  <nav>
+    <div class="nav-wrapper grey darken-4">
+      <a href="{{ url_for('home') }}" class="brand-logo right">NMP-Detector</a>
+      <div class="container">
+        <ul id="nav-mobile" class="left hide-on-med-and-down">
+          <li><a href="{{ url_for('register') }}">Sign Up</a></li>
+          <li><a href="{{ url_for('login') }}">Sign In</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+{% endblock %}
+{% block body %}
+  <div class="container center-align">
+    <h2>NOMOPHOBIA: <div style="color: grey">NOMObile phone PHOBIA</div></h2>
+    <h6 class="center-align", style="color: grey">Do you have symptoms of NMP? Find out using NMP-Detector!</h6>
+    <img src = "{{url_for('static',filename='logo.PNG')}}" style="height:10%; width:10%; object-fit:contain">    
+  </div>
+{% endblock %}

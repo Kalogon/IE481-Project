@@ -1,4 +1,5 @@
 from sqlite3 import dbapi2 as sqlite3
+from contextlib import closing
 
 from flask import Flask, request, session, url_for, redirect, \
      render_template, abort, g, flash
@@ -16,11 +17,17 @@ import colors
 app = Flask(__name__)
 app.secret_key = "ie481-programming code"
 
-
 def connect_db():
     """Returns a new connection to the database."""
-    return sqlite3.connect('userdb')
+    return sqlite3.connect('user.db')
 
+
+def init_db():
+    """Creates the database tables."""
+    with closing(connect_db()) as db:
+        with app.open_resource('schema.sql', mode='r') as f:
+            db.cursor().executescript(f.read())
+        db.commit()
 
 @app.before_request
 def before_request():
@@ -44,7 +51,7 @@ def teardown_request(exception):
 def get_user_id(username):
     """Convenience method to look up the id for a username."""
     rv = g.db.execute('select user_id from user where username = ?',
-                      [username]).fetchone()
+                       [username]).fetchone()
     return rv[0] if rv else None
 
 
@@ -59,9 +66,19 @@ def query_db(query, args=(), one=False):
 @app.route('/')
 def home():
     if not g.user:
-        return redirect(url_for('login'))
+        return redirect(url_for('default_page'))
     return render_template('homePage.html', username=g.user['username'])
 
+@app.route('/default')
+def default_page():
+    """Displays the latest messages of all users."""
+    return render_template('default.html')
+
+@app.route('/graphs')
+def graphs():
+    if not g.user:
+        return redirect(url_for('default_page'))
+    return render_template('graphs.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -72,28 +89,24 @@ def login():
         user = query_db('''select * from user where
             username = ?''', [request.form['username']], one=True)
         if user is None:
-            error = 'Invalid username'
+            error = 'Invalid Username'
         elif not check_password_hash(user['pw_hash'],
                                      request.form['password']):
-            error = 'Invalid password'
+            error = 'Invalid Password'
         else:
-            flash('You were logged in')
             session['user_id'] = user['user_id']
             return redirect(url_for('home'))
     return render_template('loginPage.html', error=error)
 
-
-@app.route('/logout', methods=['POST'])
+@app.route('/logout')
 def logout():
     """Logs the user out."""
     flash('You were logged out')
     session.pop('user_id', None)
-    return redirect(url_for('login'))
-
+    return redirect(url_for('default_page'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-
     error = None
     if request.method == 'POST':
         if not request.form['username']:
@@ -108,14 +121,13 @@ def register():
             error = 'The username is already taken'
         else:
             g.db.execute('''insert into user (
-                   username, email, pw_hash) values (?, ?, ?)''',
-                         [request.form['username'], request.form['email'],
-                          generate_password_hash(request.form['password'])])
+                username, email, pw_hash) values (?, ?, ?)''',
+                [request.form['username'], request.form['email'],
+                 generate_password_hash(request.form['password'])])
             g.db.commit()
             flash('You were successfully registered and can login now')
-            return redirect(url_for('register'))
-    return render_template('registerPage.html', error = error)
-
+            return redirect(url_for('login'))
+    return render_template('registerPage.html', error=error)
 
 def create_bar_plot():
     df_bar = bar_data(fileName)
