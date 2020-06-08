@@ -129,9 +129,10 @@ header > .center > h2{
 
 
 section{
-    background-color: black;
-    color: white;
-    height: 90%;
+    background-color: white;
+    color: black;
+    max-width:100%;
+    max-height:100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -149,8 +150,8 @@ section{
 }
 
 .intro{
-    width:60%;
-    height: 80%;
+    width:20%;
+    height: 40%;
     border-radius: 20px;
     margin: 0px 30px;
     color: #303960;

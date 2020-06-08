@@ -1,29 +1,47 @@
-<!doctype html>
-<title>Welcome to IE481 Lab#2</title>
-<link rel=stylesheet type=text/css href="{{url_for('static',filename='style.css')}}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-<div class=page>
-  <h1>Practice</h1>
-  <div class=navigation>
-    <a href="{{ url_for('register') }}">sign up</a>
-    <a href="{{ url_for('login') }}">sign in</a>
-  </div>
-  {% with flashes = get_flashed_messages() %}
-    {% if flashes %}
-      <ul class=flashes>
-      {% for message in flashes %}
-        <li>{{ message }}
-      {% endfor %}
-      </ul>
+    {% if title %}
+      <title>NMP-Detector: {{ title }}</title>
+    {% else %}
+      <title>NMP Detector</title>
     {% endif %}
-  {% endwith %}
-  <div class=body>
-    {% block body %}
+    
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    {% endblock %}
-  </div>
-  <div class=footer>
-    A Flask Application
-  </div>
-</div>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    
+    <!-- Compiled and minified JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+<body style="background-color: black; color: white">
+      {% block head %}
+      {% endblock %}
+
+      {% with flashes = get_flashed_messages() %}
+        {% if flashes %}
+          <ul>
+          {% for message in flashes %}
+            <li><p class="card-panel grey white-text">{{ message }}</p>
+          {% endfor %}
+          </ul>
+        {% endif %}
+      {% endwith %}
+    
+      {% block body %}
+      {% endblock %}
+
+    <footer class="page-footer grey darken-3 box center-align white-text" style="position:fixed;bottom:0;left:0;width:100%;">
+        <div>© 2020 [IE481] Data Visualization: NMP-Detector (Made with Flask, Dash)</div>
+        <div><b>Jae Sung Park 20160810</b></div>
+        <div><b>Geon Ho Lee 20180430</b></div>
+    </footer>
+</body>
+</html>
