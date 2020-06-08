@@ -9,13 +9,20 @@ import plotly
 import plotly.graph_objs as go
 import plotly.figure_factory as ff
 
+from datetime import datetime
+import time
 from create_database import init_db
 import json
 from data_processing import bar_data, line_data, gantt_data, fileName
+from appUsage_time_processing import get_usage_times
+from esm_processing import preprocess, filter_data
 import colors
 
 app = Flask(__name__)
 app.secret_key = "ie481-programming code"
+app_fileNames = ['AppUsageEventEntity-5572736000.csv', 'AppUsageEventEntity-5573600000.csv', 'AppUsageEventEntity-5574464000.csv', 'AppUsageEventEntity-5575328000.csv',
+                'AppUsageEventEntity-5576192000.csv', 'AppUsageEventEntity-5577056000.csv', 'AppUsageEventEntity-5577920000.csv']
+fileName = 'AppUsageEventEntity-5572736000.csv'
 
 def connect_db():
     """Returns a new connection to the database."""
@@ -326,15 +333,34 @@ def create_gantt_plot():
     return graphJSON_g
 
 
+def create_esm_plot(feature):
+    df_phone_use = []
+    df_phone_unuse = []
+    categories = ['Valence', 'Arousal', 'Attention', 'Stress', 'Disturbance_level']
+    (phone_using, phone_unusing) = filter_data(feature, phone_data, not_phone_data)
+    for category in categories:
+        df_phone_use.append(phone_using[category].mean())
+        df_phone_unuse.append(phone_unusing[category].mean())
+
+    fig = go.Figure(data=[
+        go.Bar(name='use_phone', x=categories, y=df_phone_use),
+        go.Bar(name='unuse_phone', x=categories, y=df_phone_unuse)])
+
+    fig.update_layout(barmode='group')
+    graphJSON_esm = json.dumps(fig.to_plotly_json(), default=str)
+    return graphJSON_esm
+
+
 @app.route('/chart', methods=['GET', 'POST'])
 def chart():
     feature = request.args['date']
     graphJSON_bar = create_bar_plot()
     graphJSON_line = create_line_plot()
     graphJSON_gantt = create_gantt_plot()
+    graphJSON_esm = create_esm_plot(feature)
     graphJSON = dict()
     graphJSON["bar"] = graphJSON_bar
-    graphJSON["line"] = graphJSON_line
+    graphJSON["line"] = graphJSON_esm
     return graphJSON
 
 
@@ -353,5 +379,12 @@ def bar():
 
 
 if __name__ == '__main__':
+    esm_fileName = "esm_data.csv"
+    times_result = []
     init_db()
-    app.run(port=5050, debug=True)
+    for app_fileName in app_fileNames:
+        file = "P0701/" + app_fileName
+        get_usage_times(file, times_result)
+    (phone_data, not_phone_data) = preprocess(esm_fileName, times_result)
+    print(not_phone_data)
+    app.run(port=5050)

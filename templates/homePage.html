@@ -106,6 +106,8 @@
             $( "#datepick" ).datepicker({
                 autoClose: true,
                 dateFormat: 'yy-mm-dd',
+                minDate: new Date('2019-05-08'),
+                maxDate: new Date('2019-05-14'),
                 onSelect: function (dateText, inst){
                     console.log(dateText)
                     $.ajax({
@@ -118,7 +120,9 @@
                         },
                         dataType:"json",
                         success: function (data) {
-                            document.getElementsByClassName("about")[0].remove()
+                            if (document.getElementsByClassName("about").length > 0){
+                                document.getElementsByClassName("about")[0].remove()
+                            }
                             const description = document.getElementById("description")
                             chart1 = description.appendChild(document.createElement("div"))
                             chart1.setAttribute("id", "chart1");
