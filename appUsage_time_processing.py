@@ -9,9 +9,9 @@ from collections import defaultdict
 #Define categories of applications
 # app_unique = df['name'].unique().tolist()
 SNS = ['카톡 프리뷰', '카카오톡', 'Messenger', '에브리타임', '메시지']
-Multimedia = ['Samsung Music', '음성 녹음', 'SNOW', 'YouTube', '카메라', '한컴오피스 viewer']
-Internet = ['Gmail', 'Chrome', '직방', '다방', 'Google Play 서비스', 'Dropsync']
-Games = []
+Multimedia = ['Samsung Music', '음성 녹음', 'SNOW', 'YouTube', '카메라', '한컴오피스 viewer', '갤러리', 'Google PDF 뷰어']
+Internet = ['Gmail', 'Chrome', '직방', '다방', 'Google Play 서비스', 'Dropsync', '날씨', '삼성 인터넷']
+Entertainment = ['Paco']
 fileName = 'P0701/AppUsageEventEntity-5572736000.csv'
 app_fileNames = ['AppUsageEventEntity-5572736000.csv', 'AppUsageEventEntity-5573600000.csv', 'AppUsageEventEntity-5574464000.csv', 'AppUsageEventEntity-5575328000.csv',
                 'AppUsageEventEntity-5576192000.csv', 'AppUsageEventEntity-5577056000.csv', 'AppUsageEventEntity-5577920000.csv']
@@ -24,8 +24,8 @@ def categorize(row):
         return 'Multimedia'
     elif row['name'] in Internet:
         return 'Internet'
-    elif row['name'] in Games:
-        return 'Games'
+    elif row['name'] in Entertainment:
+        return 'Entertainment'
     else:
         return 'Other'
 
@@ -80,7 +80,7 @@ def get_usage_times(file, result):
     df_sns = df.loc[df["Task"]=='SNS']
     df_multimedia = df.loc[df["Task"] == 'Multimedia']
     df_internet = df.loc[df["Task"] == 'Internet']
-    df_games = df.loc[df["Task"] == 'Games']
+    df_entertainment = df.loc[df["Task"] == 'Entertainment']
     df_others = df.loc[df["Task"] == 'Others']
 
     for i, row in df.iterrows():

@@ -8,9 +8,9 @@ import datetime
 #Define categories of applications
 # app_unique = df['name'].unique().tolist()
 SNS = ['카톡 프리뷰', '카카오톡', 'Messenger', '에브리타임', '메시지']
-Multimedia = ['Samsung Music', '음성 녹음', 'SNOW', 'YouTube', '카메라', '한컴오피스 viewer']
-Internet = ['Gmail', 'Chrome', '직방', '다방', 'Google Play 서비스', 'Dropsync']
-Games = []
+Multimedia = ['Samsung Music', '음성 녹음', 'SNOW', 'YouTube', '카메라', '한컴오피스 viewer', '갤러리', 'Google PDF 뷰어']
+Internet = ['Gmail', 'Chrome', '직방', '다방', 'Google Play 서비스', 'Dropsync', '날씨', '삼성 인터넷']
+Entertainment = ['Paco']
 
 def categorize(row):
     if row['name'] in SNS:
@@ -19,8 +19,8 @@ def categorize(row):
         return 'Multimedia'
     elif row['name'] in Internet:
         return 'Internet'
-    elif row['name'] in Games:
-        return 'Games'
+    elif row['name'] in Entertainment:
+        return 'Entertainment'
     else:
         return 'Other'
 
@@ -121,7 +121,7 @@ def line_data(file):
     df_line_60T["timeSpent_min"] = df_line_60T.apply(lambda row: row["timeSpent"]/60, axis=1)
     return df_line_60T
 
-fileName = 'AppUsageEventEntity-5572736000.csv'
+fileName = 'P0701/AppUsageEventEntity-5572736000.csv'
 
 #df_gantt = gantt_data('AppUsageEventEntity-5572736000.csv')
 #print(df_gantt)

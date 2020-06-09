@@ -22,7 +22,7 @@ app = Flask(__name__)
 app.secret_key = "ie481-programming code"
 app_fileNames = ['AppUsageEventEntity-5572736000.csv', 'AppUsageEventEntity-5573600000.csv', 'AppUsageEventEntity-5574464000.csv', 'AppUsageEventEntity-5575328000.csv',
                 'AppUsageEventEntity-5576192000.csv', 'AppUsageEventEntity-5577056000.csv', 'AppUsageEventEntity-5577920000.csv']
-fileName = 'AppUsageEventEntity-5572736000.csv'
+fileName = 'P0701/AppUsageEventEntity-5572736000.csv'
 
 def connect_db():
     """Returns a new connection to the database."""
@@ -142,14 +142,14 @@ def create_bar_plot():
 
     fig = go.Figure()
     fig.add_trace(go.Bar(
-        y=["Other", "Games", "Internet", "Multimedia", "SNS"],
+        y=["Other", "Entertainment", "Internet", "Multimedia", "SNS"],
         x=[0, 0, 0, 0, 0],
         orientation='h'
     ))
     for index, row in df_bar.iterrows():
         fig.add_trace(go.Bar(
             y=[row['Task']],
-            x=[row['timeSpent_min']],
+            x=[row['timeSpent_min']/60],
             name=row['name'],
             orientation='h',
             hovertext=[row['Description']],
@@ -161,58 +161,26 @@ def create_bar_plot():
             )
         ))
     fig.update_layout(
+        title= "Total Usage: How much do you use each app per day? (Click on graph to see Application Usage Schedule)",
+
         template='plotly_white',
-        autosize=True,
-        width=1000,
-        height=400,
         barmode="stack",
         showlegend=False,
         hovermode='y unified',
-        xaxis_title="Usage Time (min)",
-        yaxis_title="Application Categories"
+        xaxis_title="Total Usage Time (hour)",
+        yaxis_title="Application Categories",
+
+        autosize=False,
+        height=450,
+        width=1300,
+
+        margin=dict(l=20,r=20,b=20,t=50)
     )
+    fig.update_yaxes(automargin=True)
+    fig.update_xaxes(automargin=True)
+
     graphJSON_b = json.dumps(fig.to_plotly_json())
     return graphJSON_b
-
-
-def create_line_plot():
-    df_line_60T = line_data(fileName)
-
-    fig2 = go.Figure()
-    fig2.add_trace(go.Scatter(
-        x=df_line_60T['Start'],
-        y=df_line_60T['timeSpent_min'],
-        mode='lines',
-        line=dict(
-            color='#111111',
-            width=4
-        ))
-    )
-    for index, row in df_line_60T.iterrows():
-        fig2.add_trace(go.Bar(
-            x=[row['Start']],
-            y=[row['timeSpent_min']],
-            hovertext=[row['Description']],
-            marker=dict(
-                color='green',
-                line_color='rgb(150,150,150)',
-                line_width=1.5,
-                opacity=0.2
-            ))
-        )
-    fig2.update_layout(
-        template='plotly_white',
-        showlegend=False,
-        title='Usage Time',
-        hovermode='x unified',
-        width=600,
-        height=400,
-        xaxis_title='Time of Day',
-        yaxis_title='Usage Time (min)'
-    )
-    graphJSON_l = json.dumps(fig2.to_plotly_json(), default=str)
-    return graphJSON_l
-
 
 def create_gantt_plot():
     df_gantt = gantt_data(fileName)
@@ -232,12 +200,13 @@ def create_gantt_plot():
         group_tasks=True,
         showgrid_x=True,
         showgrid_y=True,
+        title= "Application Usage Schedule: At what times do you use each app? How often do you use each app? (Click on graph to see Total Usage)"
     )
 
     def add_label(graph, time, text, textcolor, bgcolor):
         graph.add_annotation(
             x='{} {}:00:00'.format(date, time),
-            y='4.5',
+            y='5.5',
             text="{}".format(text),
             showarrow=False,
             font=dict(
@@ -317,18 +286,16 @@ def create_gantt_plot():
             )
         ],
         template='plotly_white',
-        xaxis=dict(
-            autorange=True,
-            range=["{} 00:00:00".format(date), "{} 23:59:00".format(date)],
-            rangeslider=dict(
-                autorange=True,
-                range=["{} 00:00:00".format(date), "{} 23:59:00".format(date)]
-            ),
-            type="date"
-        ),
         xaxis_title="Time of Day",
-        yaxis_title="Application Categories"
+        yaxis_title="Application Categories",
+
+        autosize=False,
+        height=470,
+        width=1300,
+
+        margin=dict(l=20,r=20,b=20,t=75)
     )
+
     graphJSON_g = json.dumps(fig3.to_plotly_json(), default=str)
     return graphJSON_g
 
@@ -346,7 +313,15 @@ def create_esm_plot(feature):
         go.Bar(name='use_phone', x=categories, y=df_phone_use),
         go.Bar(name='unuse_phone', x=categories, y=df_phone_unuse)])
 
-    fig.update_layout(barmode='group')
+    fig.update_layout(
+        title= "Self-Diagnosis: How is my phone affecting me psycologically?",
+        barmode='group',
+        autosize=False,
+        height=450,
+        width=1300,
+        margin=dict(l=20, r=20, b=20, t=50),
+        template='plotly_white'
+    )
     graphJSON_esm = json.dumps(fig.to_plotly_json(), default=str)
     return graphJSON_esm
 
@@ -355,7 +330,6 @@ def create_esm_plot(feature):
 def chart():
     feature = request.args['date']
     graphJSON_bar = create_bar_plot()
-    graphJSON_line = create_line_plot()
     graphJSON_gantt = create_gantt_plot()
     graphJSON_esm = create_esm_plot(feature)
     graphJSON = dict()

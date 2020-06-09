@@ -129,7 +129,7 @@ header > .center > h2{
 
 
 
-section{
+/* section{
     background-color: white;
     color: black;
     max-width:100%;
@@ -137,8 +137,8 @@ section{
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
+} */
+/* 
 #description{
     width: 90%;
     height: 80%;
@@ -148,7 +148,7 @@ section{
     display: flex;
     align-items: center;
     justify-content: center;
-}
+} */
 
 .intro{
     width:20%;

@@ -26,7 +26,6 @@
         #box {
             color: black;
             background-color:white;
-            display: flex;
             position:fixed;
             width:95%; 
             max-width:95%;
@@ -81,18 +80,16 @@
 
         <main>
             <div id="box">
-                <section class="content">
-                    <div id="description" class="center">
-                        <div class="about">
-                            <img src = "{{url_for('static',filename='NMP-Detector.PNG')}}" class="center" style="max-height:95%; max-width:95%; object-fit: contain;">
-                        </div>
-                        <div id="tab-1" class="tab-content">
-                        </div>
-                        <div id="tab-2" class="tab-content">
-                        </div>
-
+                <div id="description" style="width: 100%; max-width: 100%; height: 100%; max-height:100%; margin: 0% auto;">
+                    <div class="about">
+                        <img src = "{{url_for('static',filename='NMP-Detector.PNG')}}" class="center" style="max-height:95%; max-width:95%;">
                     </div>
-                </section>
+                    <div id="tab-1" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100%">
+                    </div>
+                    <div id="tab-2" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100%">
+                    </div>
+
+                </div>
             </div>
         </main>
 
@@ -103,7 +100,7 @@
 
 
     <script type="text/javascript">
-        let is_gantt = false
+        let is_bar = false
 
         $(function() {
             $("brand-logo").click(function(){
@@ -145,52 +142,29 @@
                             const monitor = document.getElementById("tab-1")
                             chart1 = monitor.appendChild(document.createElement("div"))
                             chart1.setAttribute("id", "chart1");
-                            chart1.setAttribute("style", "width: 1800px; height: 600px; display: flex; align-items: center; justify-contents: center;");
-<!--                            chart1.onclick = function(){-->
-<!--                                get_gantt(dateText)-->
-<!--                            }-->
-                            bar = chart1.appendChild(document.createElement("div"))
-                            bar.setAttribute("id", "bar");
-                            bar.setAttribute("style", "width: 50%; height: 100%; display: flex; align-items: center; justify-contents: center;");
-                            gantt = chart1.appendChild(document.createElement("div"))
-                            gantt.setAttribute("id", "gantt");
-                            gantt.setAttribute("style", "width: 50%; height: 100%; display: flex; align-items: center; justify-contents: center;");
+                            chart1.setAttribute("style", "width:100%; max-width:100%; height: 100%; max-width: 100%; display: flex;");
+                            chart1.onclick = function(){
+                                get_bar(dateText)
+                            }
 
                             const diagnose = document.getElementById("tab-2")
                             chart2 = diagnose.appendChild(document.createElement("div"))
                             chart2.setAttribute("id", "chart2");
-                            chart2.setAttribute("style", "width: 1000px; height: 600px; display: flex; align-items: center; justify-contents: center;");
+                            chart2.setAttribute("style", "width:100%; max-width:100%; height: 100%; max-width: 100%; display: flex;");
 
-                            Plotly.newPlot('bar', JSON.parse(data["bar"]));
-                            Plotly.newPlot('gantt', JSON.parse(data["gantt"]));
+                            Plotly.newPlot('chart1', JSON.parse(data["gantt"]));
                             Plotly.newPlot('chart2', JSON.parse(data["esm"]));
-
+                            
                         }
                     });
                 }
             });
 
         });
-        const get_gantt = (dateText, is) =>{
+        const get_bar = (dateText, is) =>{
             console.log("a")
             dateText_revise = dateText.getFullYear() + "-" + (dateText.getMonth()+1) + "-" + dateText.getDate()
-            if (!is_gantt){
-                $.ajax({
-                    url: "/gantt",
-                    type: "GET",
-                    contentType: 'application/json;charset=UTF-8',
-                    data: {
-                        'date': dateText_revise
-                    },
-                    success: function (gantt_data) {
-                        const description = document.getElementById("description")
-                        document.getElementById("chart1").innerHTML = ""
-                        Plotly.newPlot('chart1', JSON.parse(gantt_data))
-                        is_gantt = !is_gantt
-                    }
-                })
-            }
-            else{
+            if (!is_bar){
                 $.ajax({
                     url: "/bar",
                     type: "GET",
@@ -202,7 +176,23 @@
                         const description = document.getElementById("description")
                         document.getElementById("chart1").innerHTML = ""
                         Plotly.newPlot('chart1', JSON.parse(bar_data))
-                        is_gantt = !is_gantt
+                        is_bar = !is_bar
+                    }
+                })
+            }
+            else{
+                $.ajax({
+                    url: "/gantt",
+                    type: "GET",
+                    contentType: 'application/json;charset=UTF-8',
+                    data: {
+                        'date': dateText_revise
+                    },
+                    success: function (gantt_data) {
+                        const description = document.getElementById("description")
+                        document.getElementById("chart1").innerHTML = ""
+                        Plotly.newPlot('chart1', JSON.parse(gantt_data))
+                        is_bar = !is_bar
                     }
                 })
             }
