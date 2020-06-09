@@ -48,6 +48,7 @@ def filter_data(date, p_data, np_data):
     filtered_p_data = temp[(timestamp + 118800) > temp["responseTime_unixtimestamp"]]
     temp2 = np_data[(timestamp + 32400) < np_data["responseTime_unixtimestamp"]]
     filtered_np_data = temp2[(timestamp + 118800) > temp2["responseTime_unixtimestamp"]]
+    print(filtered_p_data)
     return (filtered_p_data, filtered_np_data)
 
 

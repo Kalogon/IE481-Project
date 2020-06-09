@@ -360,7 +360,8 @@ def chart():
     graphJSON_esm = create_esm_plot(feature)
     graphJSON = dict()
     graphJSON["bar"] = graphJSON_bar
-    graphJSON["line"] = graphJSON_esm
+    graphJSON["gantt"] = graphJSON_gantt
+    graphJSON["esm"] = graphJSON_esm
     return graphJSON
 
 
@@ -387,4 +388,4 @@ if __name__ == '__main__':
         get_usage_times(file, times_result)
     (phone_data, not_phone_data) = preprocess(esm_fileName, times_result)
     print(not_phone_data)
-    app.run(port=5050)
+    app.run(port=5050, debug=True)
