@@ -84,9 +84,36 @@
                     <div class="about">
                         <img src = "{{url_for('static',filename='NMP-Detector.PNG')}}" class="center" style="max-height:95%; max-width:95%;">
                     </div>
-                    <div id="tab-1" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100%">
+                    <div id="tab-1" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100% display:flex">
                     </div>
-                    <div id="tab-2" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100%">
+                    <div id="tab-2" class="tab-content", style=" width: 100%; max-width: 100%; height: 100%; max-height:100%">
+                        <table class="diagnose-table">
+                            <tr>
+                                <th>category</th>
+                                <th>Emotion difference</th>
+                                <th>Diagnose</th>
+                            </tr>
+                            <tr>
+                                <td>Valence</td>
+                                <td class="valence"></td>
+                                <td class="valence-state"></td>
+                            </tr>
+                            <tr>
+                                <td>Attention</td>
+                                <td class="attention"></td>
+                                <td class="attention-state"></td>
+                            </tr>
+                            <tr>
+                                <td>Stress</td>
+                                <td class="stress"></td>
+                                <td class="stress-state"></td>
+                            </tr>
+                            <tr>
+                                <td>Disturbance Level</td>
+                                <td class="disturb"></td>
+                                <td class="disturb-state"></td>
+                            </tr>
+                        </table>
                     </div>
 
                 </div>
@@ -134,8 +161,14 @@
                         },
                         dataType:"json",
                         success: function (data) {
+                            $('.tab-select').removeClass("current")
+                            $('.tab-content').removeClass("current")
                             $(".nav-content").css("display", "inherit")
                             $('#tab-1').addClass("current")
+                            $('#chart2').remove()
+                            $('#chart1').remove()
+                            $('#analy').remove()
+                            $('.tab-select:first').addClass("current")
                             if (document.getElementsByClassName("about").length > 0){
                                 document.getElementsByClassName("about")[0].remove()
                             }
@@ -143,18 +176,51 @@
                             chart1 = monitor.appendChild(document.createElement("div"))
                             chart1.setAttribute("id", "chart1");
                             chart1.setAttribute("style", "width:100%; max-width:100%; height: 100%; max-width: 100%; display: flex;");
+                            analysis1 = monitor.appendChild(document.createElement("div"))
+                            analysis1.innerHTML = "<h6><b>Most Frequently Used App: </b>Opened <em>{{most_freq_app}}</em> {{num_freq_app}} times</h6> <br /> <h6><b>Most Frequently Used Category: </b>Opened <em>{{most_freq_category}}</em> {{num_freq_category}} times</h6> <br/> <h6><b>You opened your phone the most at: </b> {{most_freq_time}}</h6> <br/> <h6>You used <b>{{most_category}}</b> category the most today for <b>{{most_category_min}}</b> minutes</h6> <br /> <h6>You used <b>{{most_app}}</b> application the most today for <b>{{most_app_min}}</b> minutes</h6>"
+                            analysis1.setAttribute("id", "analy");
                             chart1.onclick = function(){
                                 get_bar(dateText)
                             }
 
                             const diagnose = document.getElementById("tab-2")
-                            chart2 = diagnose.appendChild(document.createElement("div"))
+                            chart2 = document.createElement("div")
+                            $("#tab-2").prepend(chart2)
                             chart2.setAttribute("id", "chart2");
-                            chart2.setAttribute("style", "width:100%; max-width:100%; height: 100%; max-width: 100%; display: flex;");
+                            chart2.setAttribute("style", "display:flex; align-items:center; justify-content:center; width: 55%; max-width:100%; height: 100%; max-width: 100%; display: flex;");
 
                             Plotly.newPlot('chart1', JSON.parse(data["gantt"]));
                             Plotly.newPlot('chart2', JSON.parse(data["esm"]));
-                            
+                            let esm_data = JSON.parse(data["esm"])
+
+                            let phone_used = esm_data["data"][0].y
+                            let phone_unused = esm_data["data"][1].y
+                            let categories = [".valence", ".attention", ".stress", ".disturb"]
+                            for(let i=0;i<4;i++){
+                                let diff = phone_unused[i] - phone_used[i]
+                                $(categories[i]).text(diff)
+                                if(i===2){
+                                    if(diff > 1){
+                                        $(categories[i]+"-state").text("warn")
+                                        $(categories[i]+"-state").closest("tr").css('background-color',"#fec8c9")
+                                    }
+                                    else{
+                                        $(categories[i]+"-state").text("safe")
+                                        $(categories[i]+"-state").closest("tr").css('background-color',"#E3F4EA")
+                                    }
+                                }
+                                else{
+                                    if(diff < -1){
+                                        $(categories[i]+"-state").text("warn")
+                                        $(categories[i]+"-state").closest("tr").css('background-color',"#fec8c9")
+                                    }
+                                    else{
+                                        $(categories[i]+"-state").text("safe")
+                                        console.log( $(categories[i]+"-state").closest("tr"))
+                                        $(categories[i]+"-state").closest("tr").css('background-color',"#E3F4EA")
+                                    }
+                                }
+                            }
                         }
                     });
                 }
