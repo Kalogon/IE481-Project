@@ -25,8 +25,8 @@ def app_colors(df):
             color = [0, 160, 185]
             percent = random.randint(0, 50)
             colors['{}'.format(app_name)] = lighter(color, percent)
-        elif(category == 'Games'):
-            color = [255, 155, 0]
+        elif(category == 'Entertainment'):
+            color = [0, 128, 0]
             percent = random.randint(0, 50)
             colors['{}'.format(app_name)] = lighter(color, percent)
         else:

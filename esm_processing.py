@@ -11,11 +11,7 @@ fileName = "esm_data.csv"
 app_fileNames = ['AppUsageEventEntity-5572736000.csv', 'AppUsageEventEntity-5573600000.csv', 'AppUsageEventEntity-5574464000.csv', 'AppUsageEventEntity-5575328000.csv',
                 'AppUsageEventEntity-5576192000.csv', 'AppUsageEventEntity-5577056000.csv', 'AppUsageEventEntity-5577920000.csv']
 
-category = ["sns", "multimedia", "internet", "games", "others"]
-
-
-
-
+category = ["SNS", "Multimedia", "Internet", "Entertainment", "Other"]
 
 def preprocess(file, times_result):
     def is_phone_using(time):
