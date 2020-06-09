@@ -172,7 +172,7 @@ def create_bar_plot():
 
         autosize=False,
         height=450,
-        width=1300,
+        width=1200,
 
         margin=dict(l=20,r=20,b=20,t=50)
     )
@@ -303,24 +303,29 @@ def create_gantt_plot():
 def create_esm_plot(feature):
     df_phone_use = []
     df_phone_unuse = []
-    categories = ['Valence', 'Arousal', 'Attention', 'Stress', 'Disturbance_level']
+    categories = ['Valence', 'Attention', 'Stress', 'Disturbance_level']
     (phone_using, phone_unusing) = filter_data(feature, phone_data, not_phone_data)
     for category in categories:
         df_phone_use.append(phone_using[category].mean())
         df_phone_unuse.append(phone_unusing[category].mean())
 
     fig = go.Figure(data=[
-        go.Bar(name='use_phone', x=categories, y=df_phone_use),
-        go.Bar(name='unuse_phone', x=categories, y=df_phone_unuse)])
+        go.Bar(name='When using phone', x=categories, y=df_phone_use),
+        go.Bar(name='When not using phone', x=categories, y=df_phone_unuse)])
 
     fig.update_layout(
         title= "Self-Diagnosis: How is my phone affecting me psycologically?",
         barmode='group',
         autosize=False,
-        height=450,
-        width=1300,
-        margin=dict(l=20, r=20, b=20, t=50),
-        template='plotly_white'
+        height=500,
+        width=900,
+        yaxis= {'range': [-3,3]},
+        margin=dict(l=20, r=20, b=20, t=50, pad=4),
+        template='plotly_white',
+        font=dict(
+            family="Roboto",
+            size=20
+        ),
     )
     graphJSON_esm = json.dumps(fig.to_plotly_json(), default=str)
     return graphJSON_esm

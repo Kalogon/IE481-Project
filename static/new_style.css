@@ -15,14 +15,42 @@ li.tab-select{
 .tab-content{
     display: none;
 }
-.tab-content.current{
-	display: inherit;
+.current{
+	display:flex;
+	align-items:center;
+	justify-content:center;
 }
 
 .nav-content{
     display: none;
 }
 
-#tab-1, #tab-2{
-    width: 1000px;
+.diagnose-table{
+    width: 30%;
+    height: 55%;
+    text-align: center;
+
+
+}
+.diagnose-table td,th{
+    padding: 1vw;
+    vertical-align: middle;
+}
+
+.diagnose-table th{
+    background-color: #ABD0CE;
+    font-size: 1vw;
+}
+
+.diagnose-table th:first-child{
+    border-top-left-radius: 10px;
+}
+.diagnose-table th:last-child{
+    border-top-right-radius: 10px;
+}
+
+.diagnose-table td{
+    background-color: transparent;
+    color: black;
+    font-size: 0.8vw;
 }
