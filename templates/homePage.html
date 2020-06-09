@@ -84,7 +84,7 @@
                     <div class="about">
                         <img src = "{{url_for('static',filename='NMP-Detector.PNG')}}" class="center" style="max-height:95%; max-width:95%;">
                     </div>
-                    <div id="tab-1" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100%">
+                    <div id="tab-1" class="tab-content", style="width: 100%; max-width: 100%; height: 100%; max-height:100% display:flex">
                     </div>
                     <div id="tab-2" class="tab-content", style=" width: 100%; max-width: 100%; height: 100%; max-height:100%">
                         <table class="diagnose-table">
@@ -166,6 +166,8 @@
                             $(".nav-content").css("display", "inherit")
                             $('#tab-1').addClass("current")
                             $('#chart2').remove()
+                            $('#chart1').remove()
+                            $('#analy').remove()
                             $('.tab-select:first').addClass("current")
                             if (document.getElementsByClassName("about").length > 0){
                                 document.getElementsByClassName("about")[0].remove()
@@ -174,6 +176,9 @@
                             chart1 = monitor.appendChild(document.createElement("div"))
                             chart1.setAttribute("id", "chart1");
                             chart1.setAttribute("style", "width:100%; max-width:100%; height: 100%; max-width: 100%; display: flex;");
+                            analysis1 = monitor.appendChild(document.createElement("div"))
+                            analysis1.innerHTML = "<h6><b>Most Frequently Used App: </b>Opened <em>{{most_freq_app}}</em> {{num_freq_app}} times</h6> <br /> <h6><b>Most Frequently Used Category: </b>Opened <em>{{most_freq_category}}</em> {{num_freq_category}} times</h6> <br/> <h6><b>You opened your phone the most at: </b> {{most_freq_time}}</h6> <br/> <h6>You used <b>{{most_category}}</b> category the most today for <b>{{most_category_min}}</b> minutes</h6> <br /> <h6>You used <b>{{most_app}}</b> application the most today for <b>{{most_app_min}}</b> minutes</h6>"
+                            analysis1.setAttribute("id", "analy");
                             chart1.onclick = function(){
                                 get_bar(dateText)
                             }

@@ -13,10 +13,25 @@ from datetime import datetime
 import time
 from create_database import init_db
 import json
-from data_processing import bar_data, line_data, gantt_data, fileName
+from data_processing import bar_data, line_data, gantt_data, fileName, df_freq_app, df_freq_category, df_freq_time, df_most, df_most_app
 from appUsage_time_processing import get_usage_times
 from esm_processing import preprocess, filter_data
 import colors
+
+#DATA EXTRACTION
+most_freq_app = df_freq_app['name']
+num_freq_app = df_freq_app['Task']
+
+most_freq_category = df_freq_category['Task']
+num_freq_category = df_freq_category['name']
+
+most_freq_time = df_freq_time['time_frame']
+
+most_category = df_most['Task']
+most_category_min = df_most['timeSpent_min']
+
+most_app = df_most_app['name']
+most_app_min = df_most_app['timeSpent_min']
 
 app = Flask(__name__)
 app.secret_key = "ie481-programming code"
@@ -74,7 +89,17 @@ def query_db(query, args=(), one=False):
 def home():
     if not g.user:
         return redirect(url_for('default_page'))
-    return render_template('homePage.html', username=g.user['username'])
+    return render_template('homePage.html', username=g.user['username'],
+        most_freq_app=most_freq_app,
+        num_freq_app=num_freq_app,
+        most_freq_category=most_freq_category,
+        num_freq_category=num_freq_category,
+        most_freq_time=most_freq_time,
+        most_category=most_category,
+        most_category_min=most_category_min,
+        most_app=most_app,
+        most_app_min=most_app_min
+    )
 
 @app.route('/default')
 def default_page():
@@ -161,7 +186,7 @@ def create_bar_plot():
             )
         ))
     fig.update_layout(
-        title= "Total Usage: How much do you use each app per day? (Click on graph to see Application Usage Schedule)",
+        title= "<b>Total Usage: How much do you use each app per day?</b> <br /> (Click on graph to see Application Usage Schedule)",
 
         template='plotly_white',
         barmode="stack",
@@ -172,7 +197,7 @@ def create_bar_plot():
 
         autosize=False,
         height=450,
-        width=1200,
+        width=1100,
 
         margin=dict(l=20,r=20,b=20,t=50)
     )
@@ -200,7 +225,7 @@ def create_gantt_plot():
         group_tasks=True,
         showgrid_x=True,
         showgrid_y=True,
-        title= "Application Usage Schedule: At what times do you use each app? How often do you use each app? (Click on graph to see Total Usage)"
+        title= "<b>Application Usage Schedule: At what times do you use each app? How often do you use each app? </b> <br /> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; (Click on graph to see Total Usage)"
     )
 
     def add_label(graph, time, text, textcolor, bgcolor):
@@ -291,7 +316,7 @@ def create_gantt_plot():
 
         autosize=False,
         height=470,
-        width=1300,
+        width=1100,
 
         margin=dict(l=20,r=20,b=20,t=75)
     )

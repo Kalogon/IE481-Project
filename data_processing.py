@@ -123,11 +123,32 @@ def line_data(file):
 
 fileName = 'P0701/AppUsageEventEntity-5572736000.csv'
 
-#df_gantt = gantt_data('AppUsageEventEntity-5572736000.csv')
-#print(df_gantt)
+df_gantt = gantt_data(fileName)
+# print(df_gantt.loc[df_gantt['name'] == '토스'])
 
-#df_bar = bar_data('AppUsageEventEntity-5572736000.csv')
-#print(df_bar)
+df_freq_app = df_gantt.groupby(['name']).count().reset_index()
+df_freq_app = df_freq_app.iloc[df_freq_app['Task'].idxmax()]
+# print(df_freq_app)
+# print(df_freq_app['Task'])
+
+df_freq_category = df_gantt.groupby(['Task']).count().reset_index()
+df_freq_category = df_freq_category.iloc[df_freq_category['name'].idxmax()]
+
+df_freq_time = df_gantt.groupby(['time_frame']).count().reset_index()
+df_freq_time = df_freq_time.iloc[df_freq_time['Task'].idxmax()]
+# print(df_freq_time)
+
+
+df_bar = bar_data(fileName)
+# print(df_bar)
+
+df_most = df_bar.groupby(['Task']).sum().reset_index()
+df_most = df_most.iloc[df_most['timeSpent_min'].idxmax()]
+# print(df_most)
+
+df_most_app = df_bar.groupby(['name']).sum().reset_index()
+df_most_app = df_most_app.iloc[df_most_app['timeSpent_min'].idxmax()]
+# print(df_most_app)
 
 #df_line = line_data('AppUsageEventEntity-5572736000.csv')
 #print(df_line)
