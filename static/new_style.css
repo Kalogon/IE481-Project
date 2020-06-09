@@ -1,0 +1,28 @@
+li.tab-select{
+    margin-top: 10px;
+    padding: 5px 15px;
+    font-size: 18px;
+}
+
+.tab-select.current{
+    color: black;
+    background-color: white;
+}
+
+.tab-select:hover {
+    text-decoration: none; border-bottom: 2px solid white; color: unset;
+}
+.tab-content{
+    display: none;
+}
+.tab-content.current{
+	display: inherit;
+}
+
+.nav-content{
+    display: none;
+}
+
+#tab-1, #tab-2{
+    width: 1000px;
+}
