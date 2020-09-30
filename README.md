@@ -15,6 +15,7 @@ Three forms of visualization were applied in making the web application:
 - Gantt Chart
 - Horizontal Bar Chart
 - Grouped Bar Chart
+
 The visualizations were made using Plotly.
 
 ### Use of Data
