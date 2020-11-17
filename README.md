@@ -1,7 +1,7 @@
 # NMP-Detector
 ## Made with Python Flask, Dash
 
-** Service has been depreciated
+** Service has been stopped
 
 ### Background
 This application was developed for the **[IE481] Special Lectures in Industrial Engineering (Data Visualization)** class in the 2020 spring semester at the Korea Advanced Institute of Science and Technology (KAIST), taught by Professor Uichin Lee.
