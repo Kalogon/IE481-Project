@@ -1,6 +1,8 @@
 # NMP-Detector
 ## Made with Python Flask, Dash
 
+Made for KAIST Undergradaute 2020 Spring Semester <b>[IE481]: Special Topics in Industrial Engineering (Data Visualization)</b> Class
+
 ** Service discontinued
 
 ### Background
